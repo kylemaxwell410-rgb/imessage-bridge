@@ -229,13 +229,19 @@ final class Router {
             warnings.append("\(name ?? to) isn't on your allowed recipients list.")
         }
         if let taint {
-            warnings.append("You're seeing this because \(taint.reason).")
+            let f = DateFormatter()
+            f.dateStyle = .none
+            f.timeStyle = .short
+            await MainActor.run {
+                state.log(agent: agent.name, action: "send_refused", detail: "to \(to) (sending paused: \(taint.reason))", ok: false)
+            }
+            throw BridgeError.forbidden("Sending is paused for this agent until \(f.string(from: taint.until)) because \(taint.reason). Nothing was sent. Do not retry before then; tell the user.")
         }
 
         let reasons = warnings
         if agent.confirmSends || !reasons.isEmpty {
             let result = await MainActor.run {
-                Messaging.confirmSend(agent: agent.name, to: to, name: name, service: svc, text: text,
+                Messaging.confirmSend(agent: agent.name, to: to, name: name, service: svc ?? "auto (existing conversation)", text: text,
                                       warnings: reasons, offerAllowRecipient: unknownRecipient,
                                       offerStopAsking: agent.confirmSends)
             }
@@ -253,8 +259,9 @@ final class Router {
                 await MainActor.run { state.stopConfirmingSends(agent.id) }
             }
         }
-        try await MainActor.run { try Messaging.send(to: to, text: text, service: svc) }
-        return ["sent": true, "to": to, "name": name ?? "", "service": svc, "characters": text.count]
+        let outcome = try await Messaging.send(to: to, text: text, requested: svc, dbPath: service.dbPath)
+        return ["sent": true, "verified": true, "to": to, "name": name ?? "", "service": outcome.serviceUsed,
+                "method": outcome.method, "attempts": outcome.attempts, "characters": text.count]
     }
 
     private func detached<T>(_ work: @escaping () throws -> T) async throws -> T {

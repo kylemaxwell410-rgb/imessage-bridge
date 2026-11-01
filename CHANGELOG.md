@@ -6,6 +6,17 @@ and uses it as the GitHub release notes.
 
 ## Unreleased
 
+### Changed
+- Sending now goes into the existing conversation with the recipient, so Messages picks
+  iMessage, RCS or SMS itself. On macOS 26 the old way reported success to Android numbers
+  without delivering anything.
+- A send is reported as sent only after the Mac's message database shows the outbound
+  message. The result says which service carried it; an error means nothing was delivered.
+- The `service` option on send_message is now optional and only forces a service; left
+  unset, the existing conversation decides.
+- While an agent is paused after reading a flagged message, sends are refused with the
+  reason and the time the pause ends instead of raising a confirmation dialog.
+
 ## 0.9.2 - 2026-10-31
 
 ### Changed
