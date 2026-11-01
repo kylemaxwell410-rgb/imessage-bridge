@@ -6,6 +6,9 @@ and uses it as the GitHub release notes.
 
 ## Unreleased
 
+### Added
+- The activity log records which Jev model answered, whenever it changes.
+
 ### Changed
 - Sending now goes into the existing conversation with the recipient, so Messages picks
   iMessage, RCS or SMS itself. On macOS 26 the old way reported success to Android numbers

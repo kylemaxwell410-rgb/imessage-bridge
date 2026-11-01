@@ -35,6 +35,15 @@ public struct JevResult: Sendable {
     public let score: Double
     public let reason: String
     public let cost: Double
+    /// The model that answered, from the response's `model` field (else the one requested).
+    public let model: String
+
+    public init(score: Double, reason: String, cost: Double, model: String = "") {
+        self.score = score
+        self.reason = reason
+        self.cost = cost
+        self.model = model
+    }
 }
 
 public enum JevClient {
@@ -77,6 +86,11 @@ public enum JevClient {
         sem.wait()
 
         let (status, data) = try result.get()
+        return try parse(status: status, data: data, config: config)
+    }
+
+    /// Turns an HTTP response into a result, or an error that names the provider.
+    static func parse(status: Int, data: Data, config: JevConfig) throws -> JevResult {
         let obj = (try? JSONSerialization.jsonObject(with: data) as? [String: Any]) ?? [:]
         guard status == 200 else {
             throw BridgeError.failed("\(config.provider.label) returned HTTP \(status): \(errorMessage(obj) ?? String(decoding: data.prefix(300), as: UTF8.self))")
@@ -88,7 +102,8 @@ public enum JevClient {
             throw BridgeError.failed("unexpected response from \(config.provider.label): \(String(decoding: data.prefix(300), as: UTF8.self))")
         }
         let cost = ((payload["usage"] as? [String: Any])?["cost"] as? NSNumber)?.doubleValue ?? 0
-        return JevResult(score: score, reason: reason, cost: cost)
+        let model = (payload["model"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? config.model
+        return JevResult(score: score, reason: reason, cost: cost, model: model)
     }
 
     static func errorMessage(_ obj: [String: Any]) -> String? {

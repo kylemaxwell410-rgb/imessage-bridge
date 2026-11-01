@@ -24,6 +24,8 @@ public struct ScreenSummary: Sendable {
     public var unavailable = 0
     public var lastError: String?
     public var cost = 0.0
+    /// Which Jev model answered in this batch, when Jev ran.
+    public var jevModel: String?
 }
 
 /// Screens each message in layers, stopping at the first that flags it:
@@ -116,27 +118,29 @@ public final class LayeredScreener: MessageScreener, @unchecked Sendable {
             for item in remote.dropFirst(LayeredScreener.maxRemotePerCall) {
                 finish(item, ScreenVerdict(kind: .unavailable, score: nil, reason: "not screened (too many messages in one request)"))
             }
-            var results = [(ScreenVerdict, Double, String?)?](repeating: nil, count: toSend.count)
+            var results = [(ScreenVerdict, Double, String?, String?)?](repeating: nil, count: toSend.count)
             let lock = NSLock()
             DispatchQueue.concurrentPerform(iterations: toSend.count) { i in
                 let item = toSend[i]
-                let r: (ScreenVerdict, Double, String?)
+                let r: (ScreenVerdict, Double, String?, String?)
                 do {
                     let j = try classifyRemote(item.text, item.senderName != nil, jev)
                     r = (j.score >= config.threshold
                             ? ScreenVerdict(kind: .flagged, score: j.score, reason: j.reason)
-                            : ScreenVerdict(kind: .clean, score: j.score, reason: ""), j.cost, nil)
+                            : ScreenVerdict(kind: .clean, score: j.score, reason: ""), j.cost, nil,
+                         j.model.isEmpty ? nil : j.model)
                 } catch {
                     r = (ScreenVerdict(kind: .unavailable, score: nil, reason: "screening failed"), 0,
-                         (error as? LocalizedError)?.errorDescription ?? "\(error)")
+                         (error as? LocalizedError)?.errorDescription ?? "\(error)", nil)
                 }
                 lock.lock()
                 results[i] = r
                 lock.unlock()
             }
             for (item, r) in zip(toSend, results) {
-                guard let (verdict, cost, err) = r else { continue }
+                guard let (verdict, cost, err, model) = r else { continue }
                 summary.cost += cost
+                if let model { summary.jevModel = model }
                 finish(item, verdict, error: err)
             }
         }

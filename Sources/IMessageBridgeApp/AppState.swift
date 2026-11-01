@@ -12,6 +12,9 @@ enum AuthResult {
 
 @MainActor
 final class AppState: ObservableObject {
+    /// Last Jev model seen answering; logged whenever it changes (Jev rule: log the served model).
+    var lastJevModel: String?
+
     static let shared = AppState()
     /// From Info.plist, which scripts/release.sh sets.
     nonisolated static let version =
@@ -588,6 +591,10 @@ extension AppState {
 
     func record(_ s: ScreenSummary, agentID: UUID, agentName: String) {
         screenStats = (screenStats.screened + s.screened, screenStats.flagged + s.flagged.count, screenStats.cost + s.cost)
+        if let m = s.jevModel, m != lastJevModel {
+            lastJevModel = m
+            log(agent: agentName, action: "jev_model", detail: m, ok: true)
+        }
         if let first = s.flagged.first {
             let who = Set(s.flagged.map(\.sender)).sorted().joined(separator: ", ")
             taint(agentID, reason: "it recently read a message flagged as possible prompt injection (from \(first.sender): \(first.reason))")
