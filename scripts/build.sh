@@ -56,7 +56,7 @@ codesign "${SIGN[@]}" "$SPARKLE/Versions/B/Updater.app"
 codesign "${SIGN[@]}" "$SPARKLE"
 codesign "${SIGN[@]}" --identifier "$BUNDLE_ID.cli" "$APP/Contents/MacOS/imessage-bridge"
 codesign "${SIGN[@]}" --identifier "$BUNDLE_ID" \
-    --entitlements Resources/IMessageBridge.entitlements "$APP"
+    --entitlements "${SIGN_ENTITLEMENTS:-Resources/IMessageBridge.entitlements}" "$APP"
 codesign --verify --strict --verbose=1 "$APP"
 
 echo "==> Built $APP"
