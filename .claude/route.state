@@ -1,0 +1,4 @@
+TIER=1
+MODIFIERS=
+VERIFY=scripts/verify.sh
+SKIP_VERIFY=0
