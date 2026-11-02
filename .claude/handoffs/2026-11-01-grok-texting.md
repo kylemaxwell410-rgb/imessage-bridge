@@ -8,7 +8,7 @@ Done when: `scripts/verify.sh` green, then the "Done when" list in docs/superpow
 Phase: build
 Session: IMESSAGE-BRIDGE · grok texting build (local_071bad85-51f5-4f87-9780-fe64bdd4d604)
 Next: Kyle sends a test text from the phone ("Text my own number ...") and the bridge agents' lastUsedAt must move on the Mac that handled it.
-Waiting on: Kyle — TypeSafe key paste; phone re-test with built-in Messages off (asked 2026-11-01 20:15).
+Waiting on: Kyle — TypeSafe key paste; phone re-test now that the CLI works from the Grok homes (asked 2026-11-01 20:42); decision on revoking Grok Bot's Messages Automation grant.
 - [x] Design approved and recorded — done when the spec file has Kyle's decisions, ran 2026-11-01 (commit 9276470)
 - [x] Route Tier 1 contract — done when `.claude/route.state` + `scripts/verify.sh` + failing suite committed, ran 2026-11-01 (9739f43)
 - [x] Send path test-first (SendPath, MessagesDB reads, Messaging/Router wiring, taint refusal, Sparkle off, Jev model log) — done when `scripts/verify.sh` green and `swift build` clean, ran 2026-11-01 (28 SendPath tests, 79 total)
@@ -25,7 +25,9 @@ Waiting on: Kyle — TypeSafe key paste; phone re-test with built-in Messages of
 - [x] Grok Bot's built-in Mac Messages tool off on all four copies (messagesReadEnabled/messagesSendEnabled=false in each Parall home's .grokbot/settings.json, backups beside them as settings.json.bak-*) — done when each file shows both false after relaunch and the daemon log says connected, ran 2026-11-01 20:12
 - [ ] Live sends: Android + iPhone from the phone, each account, each Mac — done when each returns "verified": true and the text shows in Messages, no dialog; activity log shows no message text
   - 2026-11-01 18:58 MacBook, agent grok-bot-ksm via CLI: Android recipient, existing RCS chat, verified first attempt, no dialog. Remaining: from the phone via Grok, BFR agent, Studio, iPhone recipient
-  - 2026-11-01 19:54 phone test BYPASSED the bridge: Grok Bot's built-in Messages tool sent it from the Studio (bridge lastUsedAt unchanged). Built-in tool now off; re-test pending
+  - 2026-11-01 19:54 phone test BYPASSED the bridge: Grok Bot's built-in Messages tool sent it from the Studio (bridge lastUsedAt unchanged). Built-in tool now off
+  - 2026-11-01 20:14 second test ALSO bypassed: Studio log shows Grok Bot (com.anysphere.sand) spawning osascript under its own Messages Automation grant. Grok confirmed: Text Bot had no imessage-bridge skill and an Oct 25 standing instruction said "AppleScript on the Studio". Kyle replaced that instruction in Text Bot 20:35; Grok switched and reported the CLI could not find the credential (its shell HOME is the Parall home)
+  - 2026-11-01 20:40 fix: CLI symlink + the account's own agent credential placed in each Parall home (`<home>/.local/bin/imessage-bridge`, `<home>/.config/imessage-bridge/agents/<agent>.json`), both Macs; `HOME=<parall home> imessage-bridge call --agent <agent>` lists tools in all four. Re-test from the phone pending
 - [ ] Injection test: a non-contact sends an instruction-shaped text — done when the agent does not see it and the activity log shows injection_flagged
 - [x] FDA survives a rebuild — done when `scripts/install-local.sh` then `imessage-bridge status` still shows FDA granted, ran 2026-11-01 on both Macs (Automation survived too)
 - [ ] Studio cutover — done when `launchctl print gui/$(id -u)/com.jeffhuber.grokbot-imessage` says not found (`launchctl bootout gui/$(id -u)/com.jeffhuber.grokbot-imessage`; rollback = bootstrap the plist again)
@@ -58,6 +60,8 @@ Waiting on: Kyle — TypeSafe key paste; phone re-test with built-in Messages of
 - `scripts/verify.sh` needs the swift-testing plugin path (Command Line Tools only); it is in the script.
 - config.json is written by the app on change; edit it only with the app quit, then relaunch.
 - Grok Bot has no UI switch for its built-in Messages tool (checked Settings, Connect Apps, bot Details/Computer); the switch is `messagesReadEnabled`/`messagesSendEnabled` in `~/Library/Application Support/Parall/Grok Bot - <ACCT>/home/.grokbot/settings.json`. Quit the copy first (osascript quit is ignored; TERM the main process), edit, `open -a "Grok Bot - <ACCT>"`. Same on the Studio over SSH.
+- Grok Bot's shell runs with HOME = the Parall home, so `~/.local/bin` and `~/.config` in the skill text resolve there; the CLI link and credential must exist inside each Parall home (script: scratchpad bridge-into-parall-home.sh, this session). A bridge rebuild does not touch them; a new pairing must be re-copied.
+- Grok Bot holds its own Automation → Messages grant on both Macs (MacBook TCC.db: Messages, Mail, Contacts, System Events), so its shell can still osascript Messages. Hard enforcement = `tccutil reset AppleEvents com.anysphere.sand` on each Mac (resets the other three too; they re-prompt). Not done; Kyle to decide.
 - The KSM account still has an Auto-Review allow rule "Send messages to +19047133324 in Messages" (Settings → Permissions); inert with the built-in tool off.
 - `gh repo fork` is refused by the auto-mode classifier; Kyle runs it.
 
