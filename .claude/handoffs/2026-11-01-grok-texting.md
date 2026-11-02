@@ -7,8 +7,8 @@ Goal: send_message delivers to Android and iPhone recipients on macOS 26 and rep
 Done when: `scripts/verify.sh` green, then the "Done when" list in docs/superpowers/specs/2026-11-01-grok-texting-via-bridge-design.md (Android + iPhone sends verified from the phone, both accounts, both Macs, no dialog).
 Phase: build
 Session: IMESSAGE-BRIDGE · grok texting build (local_071bad85-51f5-4f87-9780-fe64bdd4d604)
-Next: Kyle pastes the Grok instructions (~/scratch/scratch-sys/imessage-bridge/grok-instructions-{KSM,BFR}.md) and sends a test text from the phone.
-Waiting on: Kyle — TypeSafe key paste; Grok instructions paste; phone test (asked 2026-11-01).
+Next: Kyle sends a test text from the phone ("Text my own number ...") and the bridge agents' lastUsedAt must move on the Mac that handled it.
+Waiting on: Kyle — TypeSafe key paste; phone re-test with built-in Messages off (asked 2026-11-01 20:15).
 - [x] Design approved and recorded — done when the spec file has Kyle's decisions, ran 2026-11-01 (commit 9276470)
 - [x] Route Tier 1 contract — done when `.claude/route.state` + `scripts/verify.sh` + failing suite committed, ran 2026-11-01 (9739f43)
 - [x] Send path test-first (SendPath, MessagesDB reads, Messaging/Router wiring, taint refusal, Sparkle off, Jev model log) — done when `scripts/verify.sh` green and `swift build` clean, ran 2026-11-01 (28 SendPath tests, 79 total)
@@ -21,9 +21,11 @@ Waiting on: Kyle — TypeSafe key paste; Grok instructions paste; phone test (as
 - [x] Pair "Grok Bot - KSM" and "Grok Bot - BFR" on each Mac (read + send, ask-before-send off via config.json confirmSends=false) — done when `imessage-bridge agents` lists both on each Mac and `call --agent` lists tools, ran 2026-11-01
 - [ ] TypeSafe key: Kyle creates the key, pastes it into the app's Safety page on each Mac and into the 1Password item — done when the Safety page shows Jev active and `op item get` no longer says REPLACE_ME
 - [ ] Prompt Guard local model downloaded on each Mac (Safety page button) — done when the Safety page shows it installed
-- [ ] Grok instructions pasted into both Grok accounts — text at ~/scratch/scratch-sys/imessage-bridge/grok-instructions.md — done when a Grok chat lists the tools via `imessage-bridge call`
+- [x] Grok instructions installed as the account-level skill `imessage-bridge` in both Grok accounts (text at ~/scratch/scratch-sys/imessage-bridge/grok-instructions-{KSM,BFR}.md) — done when the skill shows in Grok's skills list, ran 2026-11-01
+- [x] Grok Bot's built-in Mac Messages tool off on all four copies (messagesReadEnabled/messagesSendEnabled=false in each Parall home's .grokbot/settings.json, backups beside them as settings.json.bak-*) — done when each file shows both false after relaunch and the daemon log says connected, ran 2026-11-01 20:12
 - [ ] Live sends: Android + iPhone from the phone, each account, each Mac — done when each returns "verified": true and the text shows in Messages, no dialog; activity log shows no message text
   - 2026-11-01 18:58 MacBook, agent grok-bot-ksm via CLI: Android recipient, existing RCS chat, verified first attempt, no dialog. Remaining: from the phone via Grok, BFR agent, Studio, iPhone recipient
+  - 2026-11-01 19:54 phone test BYPASSED the bridge: Grok Bot's built-in Messages tool sent it from the Studio (bridge lastUsedAt unchanged). Built-in tool now off; re-test pending
 - [ ] Injection test: a non-contact sends an instruction-shaped text — done when the agent does not see it and the activity log shows injection_flagged
 - [x] FDA survives a rebuild — done when `scripts/install-local.sh` then `imessage-bridge status` still shows FDA granted, ran 2026-11-01 on both Macs (Automation survived too)
 - [ ] Studio cutover — done when `launchctl print gui/$(id -u)/com.jeffhuber.grokbot-imessage` says not found (`launchctl bootout gui/$(id -u)/com.jeffhuber.grokbot-imessage`; rollback = bootstrap the plist again)
@@ -55,6 +57,8 @@ Waiting on: Kyle — TypeSafe key paste; Grok instructions paste; phone test (as
 - Over SSH the login keychain refuses imports ("User interaction is not allowed"); hence the dedicated keychain.
 - `scripts/verify.sh` needs the swift-testing plugin path (Command Line Tools only); it is in the script.
 - config.json is written by the app on change; edit it only with the app quit, then relaunch.
+- Grok Bot has no UI switch for its built-in Messages tool (checked Settings, Connect Apps, bot Details/Computer); the switch is `messagesReadEnabled`/`messagesSendEnabled` in `~/Library/Application Support/Parall/Grok Bot - <ACCT>/home/.grokbot/settings.json`. Quit the copy first (osascript quit is ignored; TERM the main process), edit, `open -a "Grok Bot - <ACCT>"`. Same on the Studio over SSH.
+- The KSM account still has an Auto-Review allow rule "Send messages to +19047133324 in Messages" (Settings → Permissions); inert with the built-in tool off.
 - `gh repo fork` is refused by the auto-mode classifier; Kyle runs it.
 
 ## Next session
