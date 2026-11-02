@@ -33,7 +33,7 @@ Waiting on: Kyle — TypeSafe key paste; phone re-test now that the CLI works fr
   - 2026-11-01 20:31:18 FIRST phone → Grok → bridge send: Studio agent grok-bot-ksm, iPhone recipient (own number), iMessage, verified, no dialog. Stalled first on a one-time login-keychain prompt for the old typesafe-api-key item on the Studio (Kyle clicked Always Allow). Remaining: BFR agent, MacBook, Android recipient from the phone
 - [ ] Injection test: a non-contact sends an instruction-shaped text — done when the agent does not see it and the activity log shows injection_flagged
 - [x] FDA survives a rebuild — done when `scripts/install-local.sh` then `imessage-bridge status` still shows FDA granted, ran 2026-11-01 on both Macs (Automation survived too)
-- [ ] Studio cutover — done when `launchctl print gui/$(id -u)/com.jeffhuber.grokbot-imessage` says not found (`launchctl bootout gui/$(id -u)/com.jeffhuber.grokbot-imessage`; rollback = bootstrap the plist again)
+- [ ] Studio cutover — done when `launchctl print gui/$(id -u)/com.jeffhuber.grokbot-imessage` says not found (`launchctl bootout gui/$(id -u)/com.jeffhuber.grokbot-imessage`; rollback = bootstrap the plist again). 2026-11-01: the bootout over SSH is refused by Claude's auto-mode classifier; Kyle runs it. Grok's own AppleScript path is already dead (grants revoked)
 - [ ] Upstream PR with D2 only (clean branch off upstream/main) — done when the PR exists on cmer/imessage-bridge
 - [ ] Re-review Jev threshold after 2 weeks (2026-11-15) — done when the activity log's flagged count is reviewed and sensitivity confirmed or changed
 
@@ -64,7 +64,7 @@ Waiting on: Kyle — TypeSafe key paste; phone re-test now that the CLI works fr
 - config.json is written by the app on change; edit it only with the app quit, then relaunch.
 - Grok Bot has no UI switch for its built-in Messages tool (checked Settings, Connect Apps, bot Details/Computer); the switch is `messagesReadEnabled`/`messagesSendEnabled` in `~/Library/Application Support/Parall/Grok Bot - <ACCT>/home/.grokbot/settings.json`. Quit the copy first (osascript quit is ignored; TERM the main process), edit, `open -a "Grok Bot - <ACCT>"`. Same on the Studio over SSH.
 - Grok Bot's shell runs with HOME = the Parall home, so `~/.local/bin` and `~/.config` in the skill text resolve there; the CLI link and credential must exist inside each Parall home (script: scratchpad bridge-into-parall-home.sh, this session). A bridge rebuild does not touch them; a new pairing must be re-copied.
-- Grok Bot holds its own Automation → Messages grant on both Macs (MacBook TCC.db: Messages, Mail, Contacts, System Events), so its shell can still osascript Messages. Hard enforcement = `tccutil reset AppleEvents com.anysphere.sand` on each Mac (resets the other three too; they re-prompt). Not done; Kyle to decide.
+- Grok Bot's Automation grants (Messages, Mail, Contacts, System Events) were revoked on both Macs 2026-11-01 21:05 with `tccutil reset AppleEvents com.anysphere.sand` (Kyle: "revoke"). Only `org.bloomworks.imessage-bridge` → Messages remains. Grok's Mail/Contacts/System Events automation will re-prompt once; answer Allow for those, Don't Allow for Messages.
 - The KSM account still has an Auto-Review allow rule "Send messages to +19047133324 in Messages" (Settings → Permissions); inert with the built-in tool off.
 - `gh repo fork` is refused by the auto-mode classifier; Kyle runs it.
 
