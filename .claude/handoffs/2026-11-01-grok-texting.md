@@ -23,6 +23,7 @@ Waiting on: Kyle — TypeSafe key paste; Grok instructions paste; phone test (as
 - [ ] Prompt Guard local model downloaded on each Mac (Safety page button) — done when the Safety page shows it installed
 - [ ] Grok instructions pasted into both Grok accounts — text at ~/scratch/scratch-sys/imessage-bridge/grok-instructions.md — done when a Grok chat lists the tools via `imessage-bridge call`
 - [ ] Live sends: Android + iPhone from the phone, each account, each Mac — done when each returns "verified": true and the text shows in Messages, no dialog; activity log shows no message text
+  - 2026-11-01 18:58 MacBook, agent grok-bot-ksm via CLI: Android recipient, existing RCS chat, verified first attempt, no dialog. Remaining: from the phone via Grok, BFR agent, Studio, iPhone recipient
 - [ ] Injection test: a non-contact sends an instruction-shaped text — done when the agent does not see it and the activity log shows injection_flagged
 - [x] FDA survives a rebuild — done when `scripts/install-local.sh` then `imessage-bridge status` still shows FDA granted, ran 2026-11-01 on both Macs (Automation survived too)
 - [ ] Studio cutover — done when `launchctl print gui/$(id -u)/com.jeffhuber.grokbot-imessage` says not found (`launchctl bootout gui/$(id -u)/com.jeffhuber.grokbot-imessage`; rollback = bootstrap the plist again)
