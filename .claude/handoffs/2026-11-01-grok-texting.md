@@ -33,7 +33,7 @@ Waiting on: Kyle — TypeSafe key paste; phone re-test now that the CLI works fr
   - 2026-11-01 20:31:18 FIRST phone → Grok → bridge send: Studio agent grok-bot-ksm, iPhone recipient (own number), iMessage, verified, no dialog. Stalled first on a one-time login-keychain prompt for the old typesafe-api-key item on the Studio (Kyle clicked Always Allow). Remaining: BFR agent, MacBook, Android recipient from the phone
 - [ ] Injection test: a non-contact sends an instruction-shaped text — done when the agent does not see it and the activity log shows injection_flagged
 - [x] FDA survives a rebuild — done when `scripts/install-local.sh` then `imessage-bridge status` still shows FDA granted, ran 2026-11-01 on both Macs (Automation survived too)
-- [ ] Studio cutover — done when `launchctl print gui/$(id -u)/com.jeffhuber.grokbot-imessage` says not found (`launchctl bootout gui/$(id -u)/com.jeffhuber.grokbot-imessage`; rollback = bootstrap the plist again). 2026-11-01: the bootout over SSH is refused by Claude's auto-mode classifier; Kyle runs it. Grok's own AppleScript path is already dead (grants revoked)
+- [x] Studio cutover — done when `launchctl print gui/$(id -u)/com.jeffhuber.grokbot-imessage` says not found, ran 2026-11-01 21:10 (Kyle ran the bootout from his terminal; the classifier refused it to Claude. Rollback = `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.jeffhuber.grokbot-imessage.plist`)
 - [ ] Upstream PR with D2 only (clean branch off upstream/main) — done when the PR exists on cmer/imessage-bridge
 - [ ] Re-review Jev threshold after 2 weeks (2026-11-15) — done when the activity log's flagged count is reviewed and sensitivity confirmed or changed
 
@@ -48,7 +48,7 @@ Waiting on: Kyle — TypeSafe key paste; phone re-test now that the CLI works fr
 
 ## Open — each with its check
 1. Unpushed commits. Check: `git log origin/macos26-send-path..HEAD --oneline` → empty = resolved (empty as of 2026-11-01 18:45).
-2. Huber launchd agent still loaded on the Studio. Check: `ssh mac-studio launchctl list | grep grokbot-imessage` → empty = resolved.
+2. Huber launchd agent still loaded on the Studio. Check: `ssh mac-studio launchctl list | grep grokbot-imessage` → empty = resolved (empty as of 2026-11-01 21:10).
 
 ## Decisions
 - Fallback order and RCS: RCS rides the SMS account in AppleScript (Messages upgrades it); duplicate accounts in the order are tried once.
