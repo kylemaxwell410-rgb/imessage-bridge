@@ -7,8 +7,8 @@ Goal: send_message delivers to Android and iPhone recipients on macOS 26 and rep
 Done when: `scripts/verify.sh` green, then the "Done when" list in docs/superpowers/specs/2026-11-01-grok-texting-via-bridge-design.md (Android + iPhone sends verified from the phone, both accounts, both Macs, no dialog).
 Phase: verify
 Session: IMESSAGE-BRIDGE · grok texting verify (local_071bad85-51f5-4f87-9780-fe64bdd4d604)
-Next: watch the first scheduled runs through the bridge (KSM "Text reply checker" 2026-11-02 07:41 ET; BFR "Urgent text digest" 2026-11-03 07:50 ET).
-Waiting on: the 2026-11-02 07:41 ET routine run; cmer's review of PRs #2 and #3 (no date).
+Next: nothing in the repo. Both routines were forced early on 2026-11-02 and went through the bridge (BFR "Urgent text digest" 06:23:51 ET on the MacBook, agent grok-bot-bfr; KSM "Text reply checker" 06:26:17 ET on the Studio, agent grok-bot-ksm; read-only, no outbound rows in chat.db, no dialog). The timer side is Grok's cloud and has fired these routines before; first unforced runs: KSM "Morning text recap" 07:30 ET and "Text reply checker" 08:00 ET 2026-11-02, BFR digest 2026-11-03 07:50 ET. If a run fails, Grok reports the bridge error in that Text Bot's chat; there is no separate watchdog.
+Waiting on: cmer's review of PRs #2 and #3 (no date).
 - [x] Design approved and recorded — done when the spec file has Kyle's decisions, ran 2026-11-01 (commit 9276470)
 - [x] Route Tier 1 contract — done when `.claude/route.state` + `scripts/verify.sh` + failing suite committed, ran 2026-11-01 (9739f43)
 - [x] Send path test-first (SendPath, MessagesDB reads, Messaging/Router wiring, taint refusal, Sparkle off, Jev model log) — done when `scripts/verify.sh` green and `swift build` clean, ran 2026-11-01 (28 SendPath tests, 79 total)
@@ -62,6 +62,7 @@ Waiting on: the 2026-11-02 07:41 ET routine run; cmer's review of PRs #2 and #3 
 - Over SSH the login keychain refuses imports ("User interaction is not allowed"); hence the dedicated keychain.
 - `scripts/verify.sh` needs the swift-testing plugin path (Command Line Tools only); it is in the script.
 - config.json is written by the app on change; edit it only with the app quit, then relaunch.
+- Grok Bot's window cannot be clicked in the background (computer-use app_click: canvas, no AX action) and its background screenshot renders as an unreadable tilted thumbnail; typing into the focused message field works under full-screen control, and a bot takes "Run the <routine> routine right now" as a run-now. Wispr Flow owns an invisible window over the bottom of the screen that blocks full-screen clicks on the message field; type without clicking instead.
 - Grok Bot has no UI switch for its built-in Messages tool (checked Settings, Connect Apps, bot Details/Computer); the switch is `messagesReadEnabled`/`messagesSendEnabled` in `~/Library/Application Support/Parall/Grok Bot - <ACCT>/home/.grokbot/settings.json`. Quit the copy first (osascript quit is ignored; TERM the main process), edit, `open -a "Grok Bot - <ACCT>"`. Same on the Studio over SSH.
 - Grok Bot's shell runs with HOME = the Parall home, so `~/.local/bin` and `~/.config` in the skill text resolve there; the CLI link and credential must exist inside each Parall home (script: scratchpad bridge-into-parall-home.sh, this session). A bridge rebuild does not touch them; a new pairing must be re-copied.
 - Grok Bot's Automation grants (Messages, Mail, Contacts, System Events) were revoked on both Macs 2026-11-01 21:05 with `tccutil reset AppleEvents com.anysphere.sand` (Kyle: "revoke"). Only `org.bloomworks.imessage-bridge` → Messages remains. Grok's Mail/Contacts/System Events automation will re-prompt once; answer Allow for those, Don't Allow for Messages.
