@@ -1,14 +1,14 @@
-One-sentence summary: Grok Bot (KSM + BFR) texts from the phone through a patched iMessage Bridge on both Macs with no Mac-side dialog; code built and installed on both Macs, waiting on Kyle's one-time clicks and the live-send checks.
+One-sentence summary: Grok Bot (KSM + BFR) texts from the phone through a patched iMessage Bridge on both Macs with no Mac-side dialog; built, installed, locked down and proven live on 2026-11-01 (both accounts, both Macs, iPhone + Android, Jev active); left: scheduled-run watch, injection test, upstream PR, Jev threshold review.
 Branch: macos26-send-path · Repo: ~/code/personal/automations/imessage-bridge (Studio copy: ~/code/personal/automations/imessage-bridge, same branch, updated by `git push mac-studio:code/personal/automations/imessage-bridge macos26-send-path:refs/heads/staging` then `git reset --hard staging` there)
 Date: 2026-11-01
 
 ## Plan
 Goal: send_message delivers to Android and iPhone recipients on macOS 26 and reports only verified sends, so Grok can text from the phone with no dialog on the Mac.
 Done when: `scripts/verify.sh` green, then the "Done when" list in docs/superpowers/specs/2026-11-01-grok-texting-via-bridge-design.md (Android + iPhone sends verified from the phone, both accounts, both Macs, no dialog).
-Phase: build
-Session: IMESSAGE-BRIDGE · grok texting build (local_071bad85-51f5-4f87-9780-fe64bdd4d604)
-Next: Kyle sends a test text from the phone ("Text my own number ...") and the bridge agents' lastUsedAt must move on the Mac that handled it.
-Waiting on: Kyle — TypeSafe key paste; phone re-test now that the CLI works from the Grok homes (asked 2026-11-01 20:42); decision on revoking Grok Bot's Messages Automation grant.
+Phase: verify
+Session: IMESSAGE-BRIDGE · grok texting verify (local_071bad85-51f5-4f87-9780-fe64bdd4d604)
+Next: watch the first scheduled runs through the bridge (KSM "Text reply checker" 2026-11-02 07:41 ET; BFR "Urgent text digest" 2026-11-03 07:50 ET), then the injection test.
+Waiting on: the 2026-11-02 07:41 ET routine run.
 - [x] Design approved and recorded — done when the spec file has Kyle's decisions, ran 2026-11-01 (commit 9276470)
 - [x] Route Tier 1 contract — done when `.claude/route.state` + `scripts/verify.sh` + failing suite committed, ran 2026-11-01 (9739f43)
 - [x] Send path test-first (SendPath, MessagesDB reads, Messaging/Router wiring, taint refusal, Sparkle off, Jev model log) — done when `scripts/verify.sh` green and `swift build` clean, ran 2026-11-01 (28 SendPath tests, 79 total)
@@ -24,7 +24,7 @@ Waiting on: Kyle — TypeSafe key paste; phone re-test now that the CLI works fr
 - [ ] Prompt Guard local model downloaded on each Mac (Safety page button) — done when the Safety page shows it installed
 - [x] Grok instructions installed as the account-level skill `imessage-bridge` in both Grok accounts (text at ~/scratch/scratch-sys/imessage-bridge/grok-instructions-{KSM,BFR}.md) — done when the skill shows in Grok's skills list, ran 2026-11-01
 - [x] Grok Bot's built-in Mac Messages tool off on all four copies (messagesReadEnabled/messagesSendEnabled=false in each Parall home's .grokbot/settings.json, backups beside them as settings.json.bak-*) — done when each file shows both false after relaunch and the daemon log says connected, ran 2026-11-01 20:12
-- [ ] Live sends: Android + iPhone from the phone, each account, each Mac — done when each returns "verified": true and the text shows in Messages, no dialog; activity log shows no message text
+- [x] Live sends: Android + iPhone from the phone, each account, each Mac — done when each returns "verified": true and the text shows in Messages, no dialog; activity log shows no message text, ran 2026-11-01 (KSM/Studio → iPhone 20:31 + 20:41; BFR/MacBook → iPhone 21:21; KSM/Studio → Android RCS 21:24; Activity page shows `jev_model jev-1.14.0` and character counts only)
   - 2026-11-01 18:58 MacBook, agent grok-bot-ksm via CLI: Android recipient, existing RCS chat, verified first attempt, no dialog. Remaining: from the phone via Grok, BFR agent, Studio, iPhone recipient
   - 2026-11-01 19:54 phone test BYPASSED the bridge: Grok Bot's built-in Messages tool sent it from the Studio (bridge lastUsedAt unchanged). Built-in tool now off
   - 2026-11-01 20:14 second test ALSO bypassed: Studio log shows Grok Bot (com.anysphere.sand) spawning osascript under its own Messages Automation grant. Grok confirmed: Text Bot had no imessage-bridge skill and an Oct 25 standing instruction said "AppleScript on the Studio". Kyle replaced that instruction in Text Bot 20:35; Grok switched and reported the CLI could not find the credential (its shell HOME is the Parall home)
