@@ -1,4 +1,4 @@
-One-sentence summary: Grok Bot (KSM + BFR) texts from the phone through a patched iMessage Bridge on both Macs with no Mac-side dialog; built, installed, locked down and proven live on 2026-11-01 (both accounts, both Macs, iPhone + Android, Jev active); left: scheduled-run watch, injection test, upstream PR, Jev threshold review.
+One-sentence summary: Grok Bot (KSM + BFR) texts from the phone through a patched iMessage Bridge on both Macs with no Mac-side dialog; built, installed, locked down and proven live on 2026-11-01 (both accounts, both Macs, iPhone + Android, Jev active); left: scheduled-run watch and posting the two upstream PRs (branches ready, Kyle's go needed); the 2026-11-15 Jev threshold review is parked in Claude Suggestions.
 Branch: macos26-send-path · Repo: ~/code/personal/automations/imessage-bridge (Studio copy: ~/code/personal/automations/imessage-bridge, same branch, updated by `git push mac-studio:code/personal/automations/imessage-bridge macos26-send-path:refs/heads/staging` then `git reset --hard staging` there)
 Date: 2026-11-01
 
@@ -7,7 +7,7 @@ Goal: send_message delivers to Android and iPhone recipients on macOS 26 and rep
 Done when: `scripts/verify.sh` green, then the "Done when" list in docs/superpowers/specs/2026-11-01-grok-texting-via-bridge-design.md (Android + iPhone sends verified from the phone, both accounts, both Macs, no dialog).
 Phase: verify
 Session: IMESSAGE-BRIDGE · grok texting verify (local_071bad85-51f5-4f87-9780-fe64bdd4d604)
-Next: watch the first scheduled runs through the bridge (KSM "Text reply checker" 2026-11-02 07:41 ET; BFR "Urgent text digest" 2026-11-03 07:50 ET), then the injection test.
+Next: on Kyle's go, post the two upstream PRs from the ready branches; then watch the first scheduled runs through the bridge (KSM "Text reply checker" 2026-11-02 07:41 ET; BFR "Urgent text digest" 2026-11-03 07:50 ET).
 Waiting on: the 2026-11-02 07:41 ET routine run.
 - [x] Design approved and recorded — done when the spec file has Kyle's decisions, ran 2026-11-01 (commit 9276470)
 - [x] Route Tier 1 contract — done when `.claude/route.state` + `scripts/verify.sh` + failing suite committed, ran 2026-11-01 (9739f43)
@@ -34,8 +34,7 @@ Waiting on: the 2026-11-02 07:41 ET routine run.
 - [x] Injection test: an instruction-shaped text arrives from outside — done when the agent does not see it and the activity log shows injection_flagged, ran 2026-11-01 21:56 (sent via Kyle's carrier email-to-SMS gateway, so the sender resolved to his own contact card; `get_conversation` as grok-bot-ksm returned the message hidden with `security_flag: possible_prompt_injection`, reason "tries to override an assistant's instructions"; the KSM agent's sends paused 30 min as designed)
 - [x] FDA survives a rebuild — done when `scripts/install-local.sh` then `imessage-bridge status` still shows FDA granted, ran 2026-11-01 on both Macs (Automation survived too)
 - [x] Studio cutover — done when `launchctl print gui/$(id -u)/com.jeffhuber.grokbot-imessage` says not found, ran 2026-11-01 21:10 (Kyle ran the bootout from his terminal; the classifier refused it to Claude. Rollback = `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.jeffhuber.grokbot-imessage.plist`)
-- [ ] Upstream PR with D2 only (clean branch off upstream/main) — done when the PR exists on cmer/imessage-bridge
-- [ ] Re-review Jev threshold after 2 weeks (2026-11-15) — done when the activity log's flagged count is reviewed and sensitivity confirmed or changed
+- [ ] Upstream PRs (D2 send path without the taint refusal; Prompt Guard CPU fix) — done when both PRs exist on cmer/imessage-bridge. Branches `upstream-send-path` (worktree ../imessage-bridge-upstream-pr) and `upstream-prompt-guard-cpu` (worktree ../imessage-bridge-upstream-pg) built off upstream/main 2026-11-01; drafts at ~/scratch/scratch-sys/imessage-bridge/pr-{send-path,prompt-guard}.md; posting is a public post, waits for Kyle's word
 
 ## Ideas
 - "Sent by Claude" signature: keep or drop in the Claude channel plugin on the Studio (out of scope here)
