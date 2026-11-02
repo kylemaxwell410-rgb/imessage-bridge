@@ -58,7 +58,7 @@ Waiting on: the 2026-11-02 07:41 ET routine run.
 - Self-signed identity lives in its own empty-password keychain so SSH builds can sign; local entitlements add disable-library-validation (self-signed has no Team ID). Release entitlements untouched.
 
 ## Gotchas
-- Prompt Guard on macOS 26.4: CoreML's CPU+GPU path aborts the whole process ("MLIR pass manager failed" in MetalPerformanceShadersGraph) on the first score; the app now defaults to `.cpuOnly`. A crashed install leaves `.PromptGuard-<UUID>/` staging folders (~210 MB each) in the app's Application Support; two stale ones remain on each Mac, left for Kyle to delete.
+- Prompt Guard on macOS 26.4: CoreML's CPU+GPU path aborts the whole process ("MLIR pass manager failed" in MetalPerformanceShadersGraph) on the first score; the app now defaults to `.cpuOnly`. A crashed install leaves `.PromptGuard-<UUID>/` staging folders (~210 MB each) in the app's Application Support; the stale ones were deleted on both Macs 2026-11-01 22:15 on Kyle's word.
 - The Studio checkout has the branch checked out, so `git push` to it is refused: push to `refs/heads/staging` and `git reset --hard staging` there.
 - Over SSH the login keychain refuses imports ("User interaction is not allowed"); hence the dedicated keychain.
 - `scripts/verify.sh` needs the swift-testing plugin path (Command Line Tools only); it is in the script.
