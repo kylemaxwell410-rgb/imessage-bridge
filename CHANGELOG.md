@@ -20,6 +20,9 @@ and uses it as the GitHub release notes.
 - While an agent is paused after reading a flagged message, sends are refused with the
   reason and the time the pause ends instead of raising a confirmation dialog.
 
+### Fixed
+- Installing the on-device model no longer crashes the app at the end of the download on macOS 26.4; the model now runs on the CPU.
+
 ## 0.9.2 - 2026-10-31
 
 ### Changed
