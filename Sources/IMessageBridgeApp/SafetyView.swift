@@ -130,7 +130,7 @@ struct SafetyView: View {
         } header: {
             Text("Before an agent reads a message")
         } footer: {
-            Text("Screening is an alarm, not a guarantee. An agent that reads a flagged message needs your OK for every send over the next 30 minutes.")
+            Text("Screening is an alarm, not a guarantee. An agent that reads a flagged message cannot send for the next 30 minutes; it is told why and when the pause ends.")
                 .font(.callout).foregroundStyle(.secondary)
         }
     }

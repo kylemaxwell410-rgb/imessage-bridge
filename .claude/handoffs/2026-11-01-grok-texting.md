@@ -7,8 +7,8 @@ Goal: send_message delivers to Android and iPhone recipients on macOS 26 and rep
 Done when: `scripts/verify.sh` green, then the "Done when" list in docs/superpowers/specs/2026-11-01-grok-texting-via-bridge-design.md (Android + iPhone sends verified from the phone, both accounts, both Macs, no dialog).
 Phase: build
 Session: IMESSAGE-BRIDGE · grok texting build (local_071bad85-51f5-4f87-9780-fe64bdd4d604)
-Next: Kyle's one-time clicks on each Mac (FDA on the Studio, Automation on both, pairing approvals), then live sends.
-Waiting on: Kyle — FDA + Automation clicks; TypeSafe key paste; pairing approvals (asked 2026-11-01).
+Next: Kyle pastes the Grok instructions (~/scratch/scratch-sys/imessage-bridge/grok-instructions-{KSM,BFR}.md) and sends a test text from the phone.
+Waiting on: Kyle — TypeSafe key paste; Grok instructions paste; phone test (asked 2026-11-01).
 - [x] Design approved and recorded — done when the spec file has Kyle's decisions, ran 2026-11-01 (commit 9276470)
 - [x] Route Tier 1 contract — done when `.claude/route.state` + `scripts/verify.sh` + failing suite committed, ran 2026-11-01 (9739f43)
 - [x] Send path test-first (SendPath, MessagesDB reads, Messaging/Router wiring, taint refusal, Sparkle off, Jev model log) — done when `scripts/verify.sh` green and `swift build` clean, ran 2026-11-01 (28 SendPath tests, 79 total)
@@ -16,9 +16,9 @@ Waiting on: Kyle — FDA + Automation clicks; TypeSafe key paste; pairing approv
 - [x] Settings applied on both Macs (confirm-unknown off, scan contacts on, Jev typesafe jev-1.14.0, Balanced) — done when config.json shows them after relaunch, ran 2026-11-01
 - [x] 1Password placeholder `typesafe-imessage-bridge-sys` (vault Automation) + jev.md approved-use row 7 and key row — done when `op item get typesafe-imessage-bridge-sys --vault Automation` exists and vault-lint PASS, ran 2026-11-01
 - [x] Fork + push — done when `git remote -v` shows origin = kylemaxwell410-rgb/imessage-bridge and `git log origin/macos26-send-path..HEAD` is empty, ran 2026-11-01
-- [ ] Studio FDA + Automation granted — done when `ssh mac-studio ~/.local/bin/imessage-bridge status` shows both granted
-- [ ] MacBook Automation granted — done when `~/.local/bin/imessage-bridge status` shows Automation granted
-- [ ] Pair "Grok Bot – KSM" and "Grok Bot – BFR" on each Mac (read + send, ask-before-send off) — done when `imessage-bridge agents` lists both on each Mac
+- [x] Studio FDA + Automation granted — done when `ssh mac-studio ~/.local/bin/imessage-bridge status` shows both granted, ran 2026-11-01
+- [x] MacBook Automation granted — done when `~/.local/bin/imessage-bridge status` shows Automation granted, ran 2026-11-01
+- [x] Pair "Grok Bot - KSM" and "Grok Bot - BFR" on each Mac (read + send, ask-before-send off via config.json confirmSends=false) — done when `imessage-bridge agents` lists both on each Mac and `call --agent` lists tools, ran 2026-11-01
 - [ ] TypeSafe key: Kyle creates the key, pastes it into the app's Safety page on each Mac and into the 1Password item — done when the Safety page shows Jev active and `op item get` no longer says REPLACE_ME
 - [ ] Prompt Guard local model downloaded on each Mac (Safety page button) — done when the Safety page shows it installed
 - [ ] Grok instructions pasted into both Grok accounts — text at ~/scratch/scratch-sys/imessage-bridge/grok-instructions.md — done when a Grok chat lists the tools via `imessage-bridge call`
@@ -40,8 +40,7 @@ Waiting on: Kyle — FDA + Automation clicks; TypeSafe key paste; pairing approv
 
 ## Open — each with its check
 1. Unpushed commits. Check: `git log origin/macos26-send-path..HEAD --oneline` → empty = resolved (empty as of 2026-11-01 18:45).
-2. Studio FDA missing; Automation not requested on either Mac. Check: `imessage-bridge status` on each → "granted" twice = resolved (as of 2026-11-01 18:25).
-3. Huber launchd agent still loaded on the Studio. Check: `ssh mac-studio launchctl list | grep grokbot-imessage` → empty = resolved.
+2. Huber launchd agent still loaded on the Studio. Check: `ssh mac-studio launchctl list | grep grokbot-imessage` → empty = resolved.
 
 ## Decisions
 - Fallback order and RCS: RCS rides the SMS account in AppleScript (Messages upgrades it); duplicate accounts in the order are tried once.
